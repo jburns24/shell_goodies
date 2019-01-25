@@ -15,7 +15,7 @@ Some config files for the shells I use
 ### make symbolic
 * `ln -s /home/joshua/git/shell_goodies/zsh/.zshrc /home/joshua/.zshrc`
 
-* `ln -s /home/joshua/git/shell_goodies/zsh/.gitconfig /home/joshua/.gitconfig`
+* `ln -s /home/joshua/git/shell_goodies/git/.gitconfig /home/joshua/.gitconfig`
 
 ### source .zshrc
 
