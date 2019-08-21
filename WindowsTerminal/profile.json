@@ -8,6 +8,13 @@
         "keybindings" :
         [
             {
+                "command" : "closePane",
+                "keys" :
+                [
+                    "ctrl+shift+w"
+                ]
+            },
+            {
                 "command" : "copy",
                 "keys" :
                 [
@@ -22,17 +29,17 @@
                 ]
             },
             {
-                "command" : "closeTab",
+                "command" : "duplicateTab",
                 "keys" :
                 [
-                    "ctrl+w"
+                    "ctrl+shift+d"
                 ]
             },
             {
                 "command" : "newTab",
                 "keys" :
                 [
-                    "ctrl+t"
+                    "ctrl+shift+t"
                 ]
             },
             {
@@ -113,6 +120,13 @@
                 ]
             },
             {
+                "command" : "paste",
+                "keys" :
+                [
+                    "ctrl+shift+v"
+                ]
+            },
+            {
                 "command" : "prevTab",
                 "keys" :
                 [
@@ -151,63 +165,63 @@
                 "command" : "switchToTab0",
                 "keys" :
                 [
-                    "alt+1"
+                    "ctrl+alt+1"
                 ]
             },
             {
                 "command" : "switchToTab1",
                 "keys" :
                 [
-                    "alt+2"
+                    "ctrl+alt+2"
                 ]
             },
             {
                 "command" : "switchToTab2",
                 "keys" :
                 [
-                    "alt+3"
+                    "ctrl+alt+3"
                 ]
             },
             {
                 "command" : "switchToTab3",
                 "keys" :
                 [
-                    "alt+4"
+                    "ctrl+alt+4"
                 ]
             },
             {
                 "command" : "switchToTab4",
                 "keys" :
                 [
-                    "alt+5"
+                    "ctrl+alt+5"
                 ]
             },
             {
                 "command" : "switchToTab5",
                 "keys" :
                 [
-                    "alt+6"
+                    "ctrl+alt+6"
                 ]
             },
             {
                 "command" : "switchToTab6",
                 "keys" :
                 [
-                    "alt+7"
+                    "ctrl+alt+7"
                 ]
             },
             {
                 "command" : "switchToTab7",
                 "keys" :
                 [
-                    "alt+8"
+                    "ctrl+alt+8"
                 ]
             },
             {
                 "command" : "switchToTab8",
                 "keys" :
                 [
-                    "alt+9"
+                    "ctrl+alt+9"
                 ]
             }
         ],
@@ -219,15 +233,14 @@
     "profiles" :
     [
         {
-            "acrylicOpacity" : 0.80000001192092896,
+            "acrylicOpacity" : 0.5,
+            "tabTitle": "🌜",
             "backgroundImageOpacity": 0.5,
-            "backgroundImage" : "C:\\Users\\Josh\\Pictures\\totoro.png",
+            "backgroundImage" : "C:\\git\\shell_goodies\\WindowsTerminal\\background-images\\totoro.png",
             "closeOnExit" : true,
             "colorScheme" : "Custom",
-            "tabTitle": "🌜",
             "commandline" : "powershell.exe",
             "cursorColor" : "#00FF00",
-            "cursorHeight" : 25,
             "cursorShape" : "vintage",
             "fontFace" : "Consolas",
             "fontSize" : 12,
@@ -235,7 +248,7 @@
             "historySize" : 9001,
             "icon" : "ms-appx:///ProfileIcons/{61c54bbd-c2c6-5271-96e7-009a87ff44bf}.png",
             "name" : "Windows PowerShell",
-            "padding" : "8, 0, 0, 0",
+            "padding" : "2, 0, 0, 0",
             "snapOnInput" : true,
             "startingDirectory" : "%USERPROFILE%",
             "useAcrylic" : false
@@ -246,8 +259,7 @@
             "colorScheme" : "Campbell",
             "commandline" : "cmd.exe",
             "cursorColor" : "#FFFFFF",
-            "cursorHeight" : 25,
-            "cursorShape" : "vintage",
+            "cursorShape" : "bar",
             "fontFace" : "Consolas",
             "fontSize" : 10,
             "guid" : "{0caa0dad-35be-5f56-a8ff-afceeeaa6101}",
@@ -260,22 +272,40 @@
             "useAcrylic" : true
         },
         {
-            "acrylicOpacity" : 0.5,
-            "backgroundImage" : "C:\\Users\\Josh\\Pictures\\totoro.png",
-            "closeOnExit" : true,
-            "colorScheme" : "Custom",
-            "commandline" : "wsl.exe -d Ubuntu",
+            "acrylicOpacity" : 0.84999999999999998,
+            "closeOnExit" : false,
+            "colorScheme" : "Solarized Dark",
+            "commandline" : "Azure",
+            "connectionType" : "{d9fcfdfa-a479-412c-83b7-c5640e61cd62}",
             "cursorColor" : "#FFFFFF",
-            "cursorHeight" : 25,
-            "cursorShape" : "vintage",
+            "cursorShape" : "bar",
             "fontFace" : "Consolas",
-            "fontSize" : 12,
-            "guid" : "{2c4de342-38b7-51cf-b940-2309a097f518}",
+            "fontSize" : 10,
+            "guid" : "{b453ae62-4e3d-5e58-b989-0a998ec441b8}",
+            "historySize" : 9001,
+            "icon" : "ms-appx:///ProfileIcons/{b453ae62-4e3d-5e58-b989-0a998ec441b8}.png",
+            "name" : "Azure Cloud Shell",
+            "padding" : "0, 0, 0, 0",
+            "snapOnInput" : true,
+            "startingDirectory" : "%USERPROFILE%",
+            "useAcrylic" : true
+        },
+        {
+            "acrylicOpacity" : 0.5,
+            "closeOnExit" : true,
+            "colorScheme" : "Campbell",
+            "commandline" : "wsl.exe -d Legacy",
+            "cursorColor" : "#FFFFFF",
+            "cursorShape" : "bar",
+            "fontFace" : "Consolas",
+            "fontSize" : 10,
+            "guid" : "{6e9fa4d2-a4aa-562d-b1fa-0789dc1f83d7}",
             "historySize" : 9001,
             "icon" : "ms-appx:///ProfileIcons/{9acb9455-ca41-5af7-950f-6bca1bc9722f}.png",
-            "name" : "Ubuntu",
-            "padding" : "2, 0, 0, 0",
+            "name" : "Legacy",
+            "padding" : "0, 0, 0, 0",
             "snapOnInput" : true,
+            "startingDirectory" : "%USERPROFILE%",
             "useAcrylic" : false
         }
     ],
@@ -322,6 +352,27 @@
             "red" : "#C50F1F",
             "white" : "#CCCCCC",
             "yellow" : "#C19C00"
+        },
+        {
+            "background" : "#000000",
+            "black" : "#000000",
+            "blue" : "#000080",
+            "brightBlack" : "#808080",
+            "brightBlue" : "#0000FF",
+            "brightCyan" : "#00FFFF",
+            "brightGreen" : "#00FF00",
+            "brightPurple" : "#FF00FF",
+            "brightRed" : "#FF0000",
+            "brightWhite" : "#FFFFFF",
+            "brightYellow" : "#FFFF00",
+            "cyan" : "#008080",
+            "foreground" : "#C0C0C0",
+            "green" : "#008000",
+            "name" : "Vintage",
+            "purple" : "#800080",
+            "red" : "#800000",
+            "white" : "#C0C0C0",
+            "yellow" : "#808000"
         },
         {
             "background" : "#282C34",
