@@ -1,2 +1,5 @@
 ### profile location
-C:\Users\Josh\AppData\Local\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\RoamingState
+`$env:LocalAppData\Packages\Microsoft.WindowsTerminal_<randomString>/RoamingState`
+
+### Terminal Settings
+https://github.com/microsoft/terminal/blob/master/doc/cascadia/SettingsSchema.md
