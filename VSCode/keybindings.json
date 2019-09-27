@@ -1,0 +1,27 @@
+// Place your key bindings in this file to override the defaults
+[
+    {
+        "key": "ctrl+t",
+        "command": "workbench.action.terminal.split",
+        "when": "terminalFocus"
+    },
+    {
+        "key": "ctrl+k",
+        "command": "workbench.action.terminal.kill",
+        "when": "terminalFocus"
+    },
+    {
+        "key": "ctrl+m",
+        "command": "workbench.action.toggleMaximizedPanel",
+        "when": "terminalFocus"
+    },
+    {
+        "key": "ctrl+m",
+        "command": "workbench.files.action.collapseExplorerFolders",
+        "when": "explorerViewletVisible && filesExplorerFocus"
+    },
+    {
+        "key": "ctrl+l",
+        "command": "workbench.explorer.fileView.focus"
+    },
+]
