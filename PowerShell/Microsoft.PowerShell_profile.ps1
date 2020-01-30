@@ -1,4 +1,6 @@
-﻿Import-Module posh-git
+﻿$host.ui.RawUI.WindowTitle = ""
+
+Import-Module posh-git
 
 $GitPromptSettings.EnableFileStatus = $false
 #$GitPromptSettings.EnableFileStatus = $true
@@ -121,7 +123,7 @@ function global:prompt {
     #Write-Host " ✗" -nonewline -ForegroundColor Yellow
     #Write-Host " »" -nonewline -ForegroundColor Yellow
     #Write-Host ">" -nonewline -ForegroundColor Cyan
-    Write-Host (" " + [char]0x00D7) -nonewline -ForegroundColor Yellow 
+    Write-Host (" " + [char]0x00D7) -nonewline -ForegroundColor Yellow
 
     $global:LASTEXITCODE = $realLASTEXITCODE
     return " "
@@ -135,10 +137,12 @@ Get-ChildItem ${env:ProgramFiles(x86)} -Filter 'Microsoft Visual Studio *' | % {
         $vsPath = "$_\VC"
     }
 }
+
 if (!(Test-Path $vsPath)) {
     Write-Error "This script requires visual studio and its build toolchain, but was not found."
     exit 1
 }
+
 #Set environment variables for Visual Studio Command Prompt
 pushd $vsPath
 cmd /c "vcvarsall.bat&set" | ? { $_ -match "=" } | % {
@@ -149,31 +153,31 @@ popd
 write-host "Visual Studio Command Prompt variables set." -ForegroundColor Yellow
 #>
 
-$scriptDir = Split-Path $script:MyInvocation.MyCommand.Path
+# Loading custom scripts
+# $scriptDir = Split-Path $script:MyInvocation.MyCommand.Path
 
-@(
-	'.\Functions\*.ps1'
-) | % {
-	Get-ChildItem ($scriptDir + $_) | % { . "$_" }
-}
+# @(
+# 	'.\Functions\*.ps1'
+# ) | % {
+# 	Get-ChildItem ($scriptDir + $_) | % { . "$_" }
+# }
 # Load Jump-Location profile
-Import-Module 'C:\Program Files\WindowsPowerShell\Modules\Jump.Location\0.6.0\Jump.Location.psd1'
-
-if (!(Get-Alias z -ErrorAction SilentlyContinue)) {
-	New-Alias z Jump-Location
-}
+Import-Module ZLocation
 
 Set-PSReadlineKeyHandler -Key Tab -Function Complete
 #Set-PSReadlineKeyHandler -Key Tab -Function MenuComplete
 Set-PSReadlineKeyHandler -Key Ctrl+Spacebar -ScriptBlock { Invoke-GuiCompletion }
-Set-PSReadlineOption -TokenKind Command -ForegroundColor Green
+Set-PSReadlineOption -Colors @{ "Command" =  "Green" }
+Set-PSReadLineKeyHandler -Key Ctrl+h -Function BackwardKillWord
+Set-PSReadLineKeyHandler -Key Ctrl+k -Function ForwardDeleteLine
+
 
 # this causes errors in python looking up codepage 65001
 # LookupError: unknown encoding: cp65001
 # [Console]::OutputEncoding = [Text.UTF8Encoding]::UTF8
 #
 #$OutputEncoding = New-Object -typename System.Text.UTF8Encoding
-#$PSDefaultParameterValues = @{ '*:Encoding' = 'utf8' }
+$PSDefaultParameterValues = @{ '*:Encoding' = 'utf8' }
 #CHCP 65001
 
 # info on unicode in powershell
