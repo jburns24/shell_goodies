@@ -1,0 +1,69 @@
+#!/usr/bin/env bash
+
+# Delete local branches that have an upstream branch that is gone.
+#
+# Some local branches, have a tracking relationship with a remote, an 'upstream reference'
+# upstream refs are a copy of the refs at the remote when last checked, and must be fetched periodically.
+# Pruning upstreams happens when the ref at the remote has been removed,
+# the local copy of the ref is deleted, and the tracking relationship is invalid.
+#
+# This script finds pruned upstream references, and deletes the local branches that track them.
+#
+
+function usage {
+  echo "usage: git gone [-dDph] "
+  echo
+  echo " optional flags"
+  echo "  -D, -d"
+  echo "     use hard branch delete (git branch -D)"
+  echo "     exluding either implies -d, a safe branch delete"
+  echo "  -p "
+  echo "     fetch and prune first"
+  echo "  -h "
+  echo "     help"
+  echo
+
+  [ -n "$*" ] && {
+    echo -e "error: $*\n" >&2
+    exit 1
+  }
+  exit
+   echo -e "\n$*\n\nusage: git gone [-D force branch deletes] [-p prune first]\n"; exit 1;
+}
+
+while getopts "dDph" o; do
+    case "${o}" in
+      d) ;;
+	    D) hard=true ;;
+	    p) prune=true ;;
+      h) usage ;;
+	    *) usage "invalid argument";;
+    esac
+done
+shift $((OPTIND-1))
+
+total=0
+deleted=0
+[ "$prune" = true ] && git fetch -p
+refs=($(git for-each-ref --format='%(refname) %(upstream)' refs/heads | egrep -v '/(develop|master|all)'));
+for((i=0;i<${#refs[@]};i+=2)); do {
+  let total+=1
+  local=${refs[i]};
+  remote=${refs[i+1]};
+  [ -z "$remote" ] && continue
+  if [[ "$remote" != *"refs/remotes"* ]]; then
+    # branch was local only with no remote. adjust the offset to skip this branch
+    let i-=1
+    continue
+  fi
+  #echo "checking $local => $remote"
+  git rev-parse --verify $remote &>/dev/null;
+  [[ $? != 0 ]] && {
+    let deleted+=1
+    [ "$hard" = true ] && op="-D" || op="-d"
+    git branch $op ${local#refs/heads/}
+  };
+}; done;
+
+echo
+echo "Checked $total branches, deleted $deleted"

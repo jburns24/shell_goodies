@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+range=$1
+re='^[0-9]+$'
+if [[ $range =~ $re ]] ; then
+   range="--min-parents=1"
+fi
+[ -n "$range" ] && range="$range..HEAD"
+
+while read a; do
+    git log --author="$a" --pretty=tformat: --numstat $range | gawk -vuser="$a" '{ add += $1; subs += $2; loc += $1 - $2 } END { printf "%s\t%s\t%s\t%s\n", add, subs, loc, user }' -;
+done < <(git shortlog -s $range | cut -c8-)

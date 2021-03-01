@@ -1,0 +1,73 @@
+#!/usr/bin/env bash
+
+# Run a shell command on all git directories
+#
+
+#cmd_default="git up"
+dir=$(pwd)
+depth=1
+
+function usage {
+  echo "usage: git all [-dDfhq] command"
+  echo
+  echo " optional flags"
+  echo "  -d directory"
+  echo "     search base directory (default: current directory)"
+  echo "  -D depth"
+  echo "     search depth (default: 1)"
+  echo "  -f "
+  echo "     force; run the command even if it isnt a git directory"
+  echo "  -q "
+  echo "     quiet; hide all additional output, only command output is shown"
+  echo "  -h "
+  echo "     help"
+  echo
+  echo "  command"
+  echo "     run this command on all git directories found"
+  echo "     optionally use the string literal {d}"
+  echo "     which is replaced with the current repository"
+  echo
+
+  [ -n "$*" ] && {
+    echo -e "error: $*\n" >&2
+    exit 1
+  }
+  exit
+}
+
+while getopts ":d:fD:hq" o; do
+  case "${o}" in
+    d) dir=${OPTARG} ;;
+    D) depth=${OPTARG} ;;
+    f) force=true ;;
+    q) quiet=true ;;
+    h) usage ;;
+    *) usage "invalid argument" ;;
+  esac
+done
+shift $((OPTIND-1))
+
+# validate
+[ -n "$*" ] && cmd="$*" #|| cmd="$cmd_default"
+[ ! -n "$cmd" ] && usage "Command not given"
+[ ! -d "$dir" ] && usage "Directory not found: $dir"
+
+# try to resolve relative path -d argument; relative paths fail the git directory check
+type realpath >&/dev/null && dir=$(realpath $dir)
+find -L $dir -maxdepth $depth ! -path $dir -type d | while read d; do
+
+    [ "$quiet" != true ] && echo "$d"
+    pushd "$d" &>/dev/null
+
+    # validate $d
+    [ $? -ne 0 ] && { echo -e "Skipped. pushd failed\n"; continue; }
+    [ $(git rev-parse --show-toplevel) != "$d" ] && [ "$force" != true ] && {
+        [ "$quiet" != true ] && echo -e "Skipped. Not a git repo\n"
+        popd &>/dev/null
+        continue
+    }
+
+    ${cmd/\{d\}/$d}
+    [ "$quiet" != true ] && echo
+    popd &>/dev/null
+done

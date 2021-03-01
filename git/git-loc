@@ -1,0 +1,134 @@
+#!/bin/bash
+
+shas=()
+sha=""
+exclude="(category-tree-versions|ext-4\.0\.2a|nodeunit\.js|jasmine\.js|sinon\.js|rx.lite\.js|node_modules|\.git|3rdParty|public/js/plugins|scripts/(plugins|jquery|Highcharts|bootstrap|lodash|modernizr|backbone|underscore))"
+include=".*\.\(js\|html?\|dust\|cs\|cshtml\|config\|java\|scala\|xml\|properties\|jsp\)"
+date=""
+temp="$(git rev-parse --show-toplevel)"
+repo="${temp##*/}"
+
+function main {
+
+    check_usage $@
+
+    if [[ $# -eq 0 ]]; then
+	   by_months $@
+    else
+	   by_date $@
+    fi
+}
+
+function by_months {
+   
+  mkdir -p ../loc/$repo
+
+  for m in 6 5 4 3 2 1 0; do
+      date=$(date --date="$(date +%Y-%m-1) -$m month" +%m/%d/%Y)
+      file="../loc/$repo/$(date --date="$date" +%Y%m%d).txt"
+      (by_date "$date" > "$file") || true
+      total=$(cat $file | get_total)
+      echo "\"$date\", $total"
+  done
+}
+
+function get_total { 
+    while read l; do 
+        echo $l  | sed -n '/[0-9]\+ total/p' | sed 's/[^0-9]*//g' 
+    done
+}
+
+function by_date {
+    
+    #populate $sha
+    find_sha_bydate "$date"
+
+    git show $sha --quiet
+    git checkout $sha &>/dev/null #2>&1
+    #git clean -fd &>/dev/null #2>&1
+
+    echo -e "\n"
+    count_lines $@
+
+    git checkout develop &>/dev/null
+}
+
+function find_sha_bydate {
+
+    date=$1
+    echo "Searching for shas after $date"
+    sha=$(git log --all --pretty="%h" --after "$date" | tail -n 1)
+    
+    if [[ -z "$sha" ]]; then
+        echo "Error: could not find sha: $sha"
+        exit 1
+    else
+        echo -e "Using $sha\n"
+    fi   
+
+}
+
+function count_lines {
+
+    check_status
+    
+    files=$(find . -type f -iregex "$include" | egrep -vie "$exclude")
+    
+    echo "$files" | rev | cut -d . -f1 | rev | sort | uniq -ic | sort -rn
+    echo -e "\n"
+    echo "$files" | xargs wc -l
+}
+
+
+function all_history {
+    
+    echo "all history"
+
+    read -a shas <<< $(git log --pretty="%h")
+    for sha in "${shas[@]}"; do
+	sum="0"
+	echo "working on $sha"
+
+	read -a tree <<< $(git ls-tree --full-tree -r $sha | cut -d' ' -f3 | cut -f1)
+	for blob in "${tree[@]}"; do
+	    #path="$(echo $child | cut -f2)"
+	    #blob="$(echo $child | cut -f1)"
+	    sum="$sum+$(git show $blob | wc -l)"
+	done
+
+	sum=$(bc <<< "$sum")
+	
+	line="$(git show $sha --quiet --pretty="%cd %h") $sum"
+	echo $line
+    done
+}
+
+
+function check_usage {
+
+    echo 
+
+    if [[ -z "$repo" ]]; then
+        echo "ERROR: could not find local repo"
+        exit 1
+    else
+        echo "$repo"
+    fi
+
+    if [[ -n "$@" ]]; then
+    	date=$@    
+    fi
+
+    check_status
+}
+
+function check_status {
+    if [[ -n "$(git status --short --ignored)" ]]; then
+       echo "ERROR: Must start with a clean working copy"
+       echo 
+       git status --ignored
+       exit 1
+    fi   
+}
+
+main "$@"

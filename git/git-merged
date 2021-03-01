@@ -1,0 +1,60 @@
+#!/bin/bash
+
+
+
+#cmd_default="git up"
+dir=$(pwd)
+depth=1
+
+function usage {
+  echo "usage: git merged [-x] [-f filter] -t [target]"
+  echo
+  echo " optional flags"
+  echo "  -x "
+  echo "     reverse; show unmerged branches"
+  echo "  -f filter"
+  echo "     filter to specific types of branches, e.g. release, feature"
+  echo "  -t target"
+  echo "     target branch to check for merges into"
+  echo "  -n branch"
+  echo "     exclude branches merged to this target"
+  echo "  -h "
+  echo "     help"
+  echo
+  echo "  target"
+  echo "     Check for branches merged into this target branch"
+  echo "     defaults to origin/master"
+    echo
+
+  [ -n "$*" ] && {
+    echo -e "error: $*\n" >&2
+    exit 1
+  }
+  exit
+}
+
+target="origin/master"
+reverse=false
+while getopts ":xhf:t:n:" o; do
+  case "${o}" in
+    f) filter=${OPTARG} ;;
+    x) reverse=true ;;
+    t) target=${OPTARG} ;;
+    n) not=${OPTARG} ;;
+    h) usage ;;
+    *) usage "invalid argument" ;;
+  esac
+done
+shift $((OPTIND-1))
+[ "$reverse" == "true" ] && ret=1 || ret=0
+
+for r in $(git for-each-ref refs/remotes/origin/$filter --format='%(refname)' | grep -v -e "^refs/remotes/origin/\(HEAD\|master\|develop\)$"); do
+    git merge-base --is-ancestor $r $target >> /dev/null
+    ancestor=$?
+    [ $ancestor -eq $ret -a -n "$not" ] && {
+      git merge-base --is-ancestor $r $not >> /dev/null
+      ancestor=$?
+      ancestor=$((1-ancestor))
+    }
+    [ $ancestor -eq $ret ] && echo ${r##refs/remotes/origin/}
+done

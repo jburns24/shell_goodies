@@ -1,0 +1,115 @@
+#!/usr/bin/env bash
+
+# Work with pull requests by number locally
+#
+
+function usage {
+  echo "usage: git pr <number> <command>"
+  echo
+  echo "  number"
+  echo "     the number of the pull request"
+  echo
+  echo "  command"
+  echo "     the sub-command to run against the pull request"
+  echo
+  echo "     branch: show the branch name of the pull (default)"
+  echo "     show: show the latest commit of the pull"
+  echo "     diff: diff the branch against its base"
+  echo "     log: show the log of the branch against its base"
+  echo "     checkout: check out the branch of the pull"
+  echo "     sha: show the sha of the pull"
+  echo "     open: open the website of the pull (requires hub)"
+  echo
+
+  [ -n "$*" ] && {
+    echo -e "error: $*\n" >&2
+    exit 1
+  }
+  exit
+}
+
+remote="origin"
+HAVE_HUB=0
+which 'hub' &>/dev/null && HAVE_HUB=1
+
+case "$1" in
+"")
+  [ "$HAVE_HUB" -eq "1" ] && { hub pr list; exit; };;
+"l"|"list")
+  [ "$HAVE_HUB" -eq "1" ] || { echo "Please first install https://github.com/github/hub"; exit; }
+  hub pr list
+  exit;;
+"o"|"open")
+  [ "$HAVE_HUB" -eq "1" ] || { echo "Please first install https://github.com/github/hub"; exit; }
+  hub pr show -h $(git branch-name)
+  exit;;
+"t"|"this")
+  [ "$HAVE_HUB" -eq "1" ] || { echo "Please first install https://github.com/github/hub"; exit; }
+  hub pr list -h $(git branch-name)
+  exit;;
+"h"|"help")
+  usage; exit;;
+esac
+
+number=$1
+cmd=$2
+shift; shift;
+
+# validate
+[ -z "$number" ] && usage "PR number not given"
+[ -z "$cmd" ] && cmd="checkout"
+
+lsremote=$(git ls-remote $remote refs/pull/$number/head 2>&1)
+[[ $? != 0 ]] && usage "PR #$number not found: $lsremote"
+
+# alternate approach without subshells
+# uses shell var substitution; trimming longest substring from end
+# matching pattern: tab character* (wildcard)
+# example: 1810843c4477b017dfe43f0952c8596ca9de4891	refs/pull/1719/head
+sha=${lsremote%%	*}
+#sha=$(echo "$lsremote" | awk '{print $1}')
+[ -z "$sha" ] && usage "PR #$number not found."
+
+# see if we have the sha locally, else fetch
+git cat-file -t $sha > /dev/null 2>&1 || git fetch $remote
+
+#branch=$(git show --pretty="%D" --quiet $sha | sed 's/HEAD//g;s/,//g;s/ -> //g' | awk '{print $1}')
+
+# other various approaches
+# git name-rev $sha --name-only
+# git name-rev $sha --name-only --refs=/refs/remotes/origin
+# git symbolic-ref -q --short ==always HEAD
+# git describe --all ==always HEAD
+#echo $sha
+
+#branch=$(git for-each-ref --points-at=$sha  --format="%(refname:short)" | head -n1)
+branch=$(git for-each-ref --points-at=$sha  --format="%(refname:short)" | tail -n1)
+#echo $branch
+
+case "$cmd" in
+"h"|"sha")
+  echo "$sha" ;;
+"r"|"ref")
+  git for-each-ref --format "%(if:equals=$sha)%(objectname)%(then)%(refname:short)%(end)" | AWK NF | head -n 1;;
+"s"|"show")
+  git show "$sha" ;;
+"b"|"branch")
+  [ -z "$branch" ] && usage "Couldnt find PR $number branch"
+  echo "${branch##${remote}/}" ;;
+"c"|"checkout"|"co")
+  [ -z "$branch" ] && usage "Couldnt find PR $number"
+  git checkout "${branch##origin/}"
+  git pull ;;
+"d"|"diff")
+  [ -z "$branch" ] && usage "Couldnt find PR $number"
+  git branch-diff "$sha" $*;;
+"t"|"difftool")
+  [ -z "$branch" ] && usage "Couldnt find PR $number"
+  git branch-difftool "$sha" $*;;
+"l"|"log")
+  git branch-log "$sha" $*;;
+"o"|"open")
+  hub pr show $number;;
+*)
+  usage "Command not found." ;;
+esac

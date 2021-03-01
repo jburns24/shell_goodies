@@ -1,0 +1,158 @@
+[alias]
+
+   # Essential aliases to share
+
+   # base log alias, applies style. %x08 is backspace, and removes the timezome. %b shows additional commit message body
+   #l = log --date=iso --pretty=tformat:'%C(auto)%h %C(green)%cd %C(bold blue)%an%C(auto)%d %C(reset)%s'
+   #lb = log --date=iso --pretty=tformat:'%C(auto)%h %C(green)%cd %C(bold blue)%an%C(auto)%d %C(reset)%s%+b'
+   #lm = !git --no-pager log -n1 --expand-tabs=3 --date=iso --pretty=tformat:'%C(bold blue)%an \t%C(green)%cd \t%C(auto)%h \t%C(red)%S%C(reset)'
+   l = log --date=format-local:'%Y-%m-%d %H:%M:%S' --pretty=tformat:'%C(auto)%h %C(green)%cd %C(bold blue)%an%C(auto)%d %C(reset)%s'
+   lb = log --date=format-local:'%Y-%m-%d %H:%M:%S' --pretty=tformat:'%C(auto)%h %C(green)%cd %C(bold blue)%an%C(auto)%d %C(reset)%s%+b'
+   lm = !git --no-pager log -n1 --expand-tabs=3 --date=format-local:'%Y-%m-%d %H:%M:%S' --pretty=tformat:'%C(bold blue)%<|(20)%an \t%C(green)%cd \t%C(auto)%h \t%C(red)%S%C(reset)'
+   lg = !git l --graph
+   lgb = !git lb --graph
+   ls = !git l --dirstat
+   ld = !git l --graph --simplify-by-decoration
+   lr = !git lg --left-right --cherry-mark
+   lc = log --date=iso --pretty=tformat:\"%h%x09%an%x09%ad%x09%s\"
+   lg-related = !git lg $(git refs-related)
+   w = !git --no-pager l --no-walk
+   ws = !git w --dirstat
+
+   #hub = "!f() { echo git@github.com:$1.git ; };f"
+   hub = "!f() { echo git@git.opensky.com:$1.git ; };f"
+   osky = "!f() { echo git@github.com:$1.git ; };f"
+
+   ru = remote update
+   co = checkout
+   cod = checkout develop
+   com = checkout master
+   au = add --update
+   s = status
+   ss = status -s
+   d = diff
+   blame = blame -wMC
+   dc = diff --cached
+   dw = "diff --word-diff=color --word-diff-regex=\"[^ =;'\\\"]+\""
+   du = "!f() { git diff @{u}; };f"
+   dur = "!f() { git diff $(git refs-upstream); };f"
+   b = branch
+   contains = branch --all --contains
+   #containsfile = "!f() { gbit for-each-ref --format '%(refname)' refs/remotes/origin/ | xargs -I% sh -c \"echo git cat-file -e %:\"$*\" &> /dev/null && echo %\"; };f"
+   serve = daemon --reuseaddr --base-path=. --export-all --verbose
+   server = daemon --reuseaddr --base-path=. --export-all --verbose --enable=receive-pack
+
+   # flatten the command when accidentally typing: git git log
+   git = "!f() { git $*; };f"
+
+   showtool = "!f() { [[ $1 == -* ]] && ref=\"HEAD\" || { ref=${1-HEAD}; shift; }; git difftool $ref~ $ref $*; };f"
+   show-typestat = "!f() { git show --pretty= --name-only $* | rev | cut -d '.' -f1 | rev | sort | uniq -c; };f"
+   diff-typestat = "!f() { git diff --name-only $* | rev | cut -d '.' -f1 | rev | sort | uniq -c; };f"
+   show-shortstat = "!f() { git show --pretty= --numstat $* | gawk '{ add += $1; subs += $2; loc += $1 - $2 } END { printf \"%s\\t%s\\t%s\\t%s\\n\", add, subs, loc, user }' -; };f"
+   diff-shortstat = "!f() { git diff --numstat $* | gawk '{ add += $1; subs += $2; loc += $1 - $2 } END { printf \"%s\\t%s\\t%s\\t%s\\n\", add, subs, loc, user }' -; };f"
+   diff-minhead = "!f() { git diff $* | ag -v '^(\\x1b\\[[0-9;]*[a-zA-Z])?(index [0-9a-fA-F]+..[0-9a-fA-F]+|--- a|\\+\\+\\+ b|@@ [-+]?[0-9]+,?[-+]?[0-9]+|similarity index|rename from|rename to)'; };f"
+   diff-nohead = "!f() { git diff-minhead $* | ag -v '^(\\x1b\\[[0-9;]*[a-zA-Z])?diff --git a/'; };f"
+   dif = "!f() { git -c color.ui=always -c core.pager='~/.git-scripts/diff-so-fancy/diff-so-fancy | `git config --global core.pager`' diff $*; };f"
+   sho = "!f() { git -c color.ui=always -c core.pager='~/.git-scripts/diff-so-fancy/diff-so-fancy | `git config --global core.pager`' show $*; };f"
+   mug = "!f() { git up && git checkout master && git gone; };f"
+   cos = "!f() { git checkout $1; git status; };f"
+   sed = !sh -c 'git ls-files -z $2 | xargs -0 sed -i -e \"$1\"' -
+   aliases = !git config --list | grep 'alias\\.' | sed 's/alias\\.\\([^=]*\\)=\\(.*\\)/\\1	\\2/' | sort
+   setalias = "!f() { git config --global alias.$1 \"$2\"; };f"
+
+   root = "!f() { root=$(git rev-parse --show-toplevel); echo $root; };f"
+
+   bv = for-each-ref refs/heads --format --shell --format '%(align:60)%(refname:short)%(end)%(align:40)%(if)%(upstream)%(then)[%(color:blue)%(upstream)%(color:reset)] %(upstream:track)%(end)%(end)'
+   refs = !git for-each-ref --format='%(color:bold blue)%(align:22)%(authorname)%(end) %(color:green)%(align:26)%(committerdate:local)%(end) %(color:yellow)%(align:13)%(objectname:short)%(end) %(color:red)%(refname)%(color:reset)'
+   related = !git refs-related
+   refs-related = "!f() { git for-each-ref --points-at ${1-HEAD} --format='%(refname:short)%0a%(upstream:short)'; };f"
+   upstream = !git refs-upstream
+   refs-upstream = "!f() { git for-each-ref --points-at ${1-HEAD} --format='%(upstream:short)'; };f"
+   rs = refs-short
+   refs-short = "!f() { git for-each-ref --format '%(refname:short)' refs/$@; };f"
+   rr = refs-remote
+   refs-remote = "!f() { git for-each-ref --format '%(refname:short)' refs/remotes/${1-origin}; };f"
+   refs-tracking = "!f() { git for-each-ref refs/heads --shell --format 'u=%(upstream:lstrip=3); [ -n \"$u\" ] && [[ ! \"$u\" =~ ^(develop|master|HEAD)?$ ]] && echo $u' | bash ; };f"
+   behind = refs-behind
+   refs-behind = "!f() { git for-each-ref refs/heads --shell --format 'u=%(upstream:lstrip=3); [ -n \"$u\" ] && [[ ! \"$u\" =~ ^(develop|master|HEAD)?$ ]] && [[ %(upstream:track) =~ ^.*behind.*$ ]] && echo $u' | bash ; };f"
+   refs-ahead = "!f() { git for-each-ref refs/heads --shell --format 'u=%(upstream:lstrip=3); [ -n \"$u\" ] && [[ ! \"$u\" =~ ^(develop|master|HEAD)?$ ]] && [[ %(upstream:track) =~ ^.*ahead.*$ ]] && echo $u' | bash ; };f"
+
+   track = "!f() { for r in $(git refs-reomte $1); do git branch --track ${r#origin/} $r; done; };f"
+   untrack = "!f() { for r in $(git refs-behind); do git branch -d $r; done; };f"
+   #branchdall = "!f() { for r in $(git or-each-ref --format '%(refname:short)' refs/heads/$1 | grep -vE 'develop|master'); do git branch -d $r; done; };f"
+
+   gh = "!f() { remote="$(git remote get-url origin)"; [[ $remote =~ (git@|https?://)([^:/]+)[:/](.+) ]] || { echo \"Couldn't parse origin: $remote\"; exit; }; host=\"${BASH_REMATCH[2]}\"; path=\"${BASH_REMATCH[3]}\"; url=\"http://${host}/${path%%.git}\"; echo \"$url\"; which open &>/dev/null && { open $url; exit; }; which start &>/dev/null && { start $url; exit; } ; };f"
+   ghe = gh
+   ghp = "!f() { remote="$(git remote get-url origin)"; [[ $remote =~ (git@|https?://)([^:/]+)[:/](.+) ]] || { echo \"Couldn't parse origin: $remote\"; exit; }; host=\"${BASH_REMATCH[2]}\"; path=\"${BASH_REMATCH[3]}\"; url=\"http://${host}/${path%%.git}/pulls\"; echo \"$url\"; which open &>/dev/null && { open $url; exit; }; which start &>/dev/null && { start $url; exit; } ; };f"
+
+
+   unpack-refs = "!bash -c 'IFS=$''\\n''; for f in $(git show-ref); do /bin/echo ''Writing  '' $(echo $f | cut -c42-); echo $(echo $f | cut -c1-40) > \".git/$(echo $f | cut -c42-)\"; done'"
+   trim = "!f() { sed -i 's/[[:space:]]*$//' $@; };f"
+   old = "!f() {  for r in $(git for-each-ref --sort=committerdate refs/remotes/origin --format='%(refname)'); do git --no-pager show --date='iso' -s --format=\"%<(26,trunc)%cd\t%<(9,trunc)%h\t%<(25,trunc)%cn\t${r##refs/remotes/origin/}\" \"$r\" $*; done; };f"
+   bydate = "!f() { git ls-files | while read file; do echo $(git --n-opager log --pretty=format:%ad -n 1 --date=iso -- $file) $file; done | sort; };f"
+   notbuilt = "!f() { git ls-files -- *.csproj | xargs -I% basename % | xargs -I% sh -c 'grep \"%\" PaytivaSuite.sln &>/dev/null || echo \"%\"' | sort; };f"
+   ls-grep = "!f() { git ls-files | grep -i $*; };f"
+   less-grep = "!f() { git ls-files | grep -i $* | tr '\\n' '\\0' | xargs -0 `git config --global core.pager`; };f"
+   ls-ag = "!f() { git ls-files | ag $*; };f"
+   less-ag = "!f() { git ls-files | ag $* | tr '\\n' '\\0' | xargs -0 `git config --global core.pager`; };f"
+   grep-ls = "!f() { git grep -I --files-with-matches --perl-regexp $*; };f"
+   superclean = "!f() { clean=1; while [[ $clean -ne 0 ]]; do rm .gitattributes; git reset --hard HEAD; git diff --quiet; clean=$?; done; };f"
+   superco = "!f() { clean=1; while [[ $clean -ne 0 ]]; do rm .gitattributes; git checkout .; git diff --quiet; clean=$?; done; };f"
+   blamestat2 = "!f() { which ag >/dev/null && C=ag || C=grep; [ -d \"$1\" ] && git ls-files -- \"$1\" | xargs -I% git blamestat \"%\"; [ ! -f \"$1\" ] && echo \"File not found: $1\" && exit 1; echo \"$1\"; git blame --line-porcelain HEAD -- \"$1\" | $C '^author '|sort|uniq -c|sort -nr| awk '{x+=(a[NR]=$1);$1=\"\";$2=\"\";b[NR]=$0;}END{while(++i<=NR)printf \"%d\\t%2.2f%\\t%s\\n\",a[i],a[i]*100/x,b[i]}'; };f"
+   # add -C -C to git blame for copy detection, can be very slow
+   #blamestatr = "!f() { git ls-files $* | while read f; do git blame -w -M --line-porcelain \"$f\" | grep -I '^author '; done | sort -f | uniq -ic | sort -n; };f"
+   blamestatx = "!f() { git ls-files -z $* | xargs -n1 -0 git blame -w -M --line-porcelain | grep -I '^author ' | sort -f | uniq -ic | sort -n; };f"
+   blamestat = "!f() { git ls-files $* | grep -E -iv '\\.(exe|jpg|gif|png|dll|zip|pdb|bin|mp3|swf)$' | parallel --eta -N1 git blame -w -M --line-porcelain | grep -I '^author ' | sort -f | uniq -ic | sort -n; };f"
+
+   temp = "!f() { F=`mktemp`; git show \"$*\" > $F; echo $F; };f"
+
+   lost = dangling
+   unreachable = !git w `git fsck --unreachable --connectivity-only --no-reflogs | grep commit | awk '{print $3}'`
+   dangling = !git w `git fsck --dangling --connectivity-only --no-reflogs | grep commit | awk '{print $3}'`
+   deleted = "!f() { h="$*"; [ -z \"$h\" ] && h=\"%h\"; git log --diff-filter=D --name-only --pretty=\":$h\" | awk '/^:/{ h=substr($0,2); next } NF { print $0 \" \\033[33m\" h \"\\033[m\" }' | sort -u; };f"
+
+   #https://gist.github.com/robmiller/6018582
+   branch-name = "!f() { git rev-parse --abbrev-ref HEAD; };f"
+   branch-verify = "!f() { git rev-parse --verify ${1-HEAD} &>/dev/null; };f"
+   publish = "!f() { git push -u origin $(git branch-name); };f"
+   unpublish = "!f() { git push origin :$(git branch-name); };f"
+
+   # Given a merge commit, find the span of commits that exist(ed) on that
+   # branch. Again, not so useful in itself, but used by other aliases.
+   merge-verify = "!f() { git rev-parse --verify ${1-HEAD}^2 &>/dev/null; };f"
+   merge-verify-exit = "!f() { git merge-verify ${1-HEAD} || { echo "Not a merge commit. Aborting."; exit 1; } };f"
+   merge-span = "!f() { echo $(git log -1 $2 --merges --pretty=format:%P | cut -d' ' -f1)$1$(git log -1 $2 --merges --pretty=format:%P | cut -d' ' -f2); };f"
+   merge-log = "!f() { git merge-verify-exit $1 && git l `git merge-span .. $1`; };f"
+   merge-diff = "!f() { git merge-verify-exit $1 && git diff `git merge-span ... $1`; };f"
+   merge-dif = "!f() { git merge-verify-exit $1 && git dif `git merge-span ... $1`; };f"
+   merge-difftool = "!f() { git merge-verify-exit $1 && git difftool `git merge-span ... $1`; };f"
+
+   branch-base-branch = "!f() { git branch-verify $1 && { branch=$1; shift; } || { [[ $1 =~ ^-?[0-9]+$ ]] && branch=`git pr $1 ref` && shift; } || branch=`git branch-name`; [[ $branch == *"feature/"* ]] && git branch-verify develop && echo "develop" || echo "master"; };f"
+   branch-base = "!f() { git branch-verify $1 && { branch=$1; shift; } || { [[ $1 =~ ^-?[0-9]+$ ]] && branch=`git pr $1 ref` && shift; } || branch=`git branch-name`; git branch-verify $1 && { base=$1; shift; } || base=`git branch-base-branch $branch`; git merge-base $branch $base; };f"
+   branch-log = "!f() { git branch-verify $1 && { branch=$1; shift; } || { [[ $1 =~ ^-?[0-9]+$ ]] && branch=`git pr $1 ref` && shift; } || branch=`git branch-name`; git l `git branch-base $branch`..$branch $*; };f"
+   branch-diff = "!f() { git branch-verify $1 && { branch=$1; shift; } || { [[ $1 =~ ^-?[0-9]+$ ]] && branch=`git pr $1 ref` && shift; } || branch=`git branch-name`; git diff `git branch-base $branch` $branch $*; };f"
+   branch-dif = "!f() { git branch-verify $1 && { branch=$1; shift; } || { [[ $1 =~ ^-?[0-9]+$ ]] && branch=`git pr $1 ref` && shift; } || branch=`git branch-name`; git dif `git branch-base $branch` $branch $*; };f"
+   branch-difftool = "!f() { git branch-verify $1 && { branch=$1; shift; } || { [[ $1 =~ ^-?[0-9]+$ ]] && branch=`git pr $1 ref` && shift; } || branch=`git branch-name`; git difftool `git branch-base $branch` $branch $*; };f"
+   branch-files = "!f() { git branch-verify $1 && { branch=$1; shift; } || { [[ $1 =~ ^-?[0-9]+$ ]] && branch=`git pr $1 ref` && shift; } || branch=`git branch-name`; git branch-diff $branch --name-only $*; };f"
+   branch-apply = "!f() { git branch-verify $1 && { branch=$1; shift; } || { [[ $1 =~ ^-?[0-9]+$ ]] && branch=`git pr $1 ref` && shift; } || branch=`git branch-name`; git checkout $branch -- $(git root); git reset; };f"
+
+   jira="!f() { r='([A-Z]+-[0-9]+)'; for f in `git branch-log $*`; do [[ $f =~ $r ]] && echo "https://jira.opensky.com/browse/$f"; done | sort -u; };f"
+
+   # Mark a file as "assume unchanged", which means that Git will treat it
+   # as though there are no changes to it even if there are.
+   assume = update-index --assume-unchanged
+   unassume = update-index --no-assume-unchanged
+   assumed = !git ls-files -v | grep ^h | cut -c 3-
+
+   #&& git reset -q $GIT_COMMIT -- $* && git status
+   filter-globs = "!f() { [ $# = 0 ] && echo \"Usage: git filter-globs <space separated glob patterns to retain>\" && exit; git filter-branch --prune-empty --index-filter \"git rm --cached --ignore-unmatch -qr -- $*\" -- --all; };f"
+   #filter-globs = "!f() { git filter-branch --prune-empty --index-filter \"echo git rm --cached --ignore-unmatch -q -r -- $*" -- --all; };f"
+   filter-cleanup = "!f() { git for-each-ref --format='%(refname)' refs/original/ | xargs -n 1 git update-ref -d; };f"
+   rcc = "!f() { git merged -t origin/develop -n origin/master; };f"
+   diff-shortstat = "!f() { git diff --numstat $* | gawk '{ add += $1; subs += $2; loc += $1 - $2 } END { printf \"%s\\t%s\\t%s\\t%s\\n\", add, subs, loc, user }' -; };f"
+
+   log-longest = "!f() { git rev-list --all --no-merges | while read rev; do wc=`git show -s --format='%s %b' $rev | wc -w`; msg=`git show -s --format=' %h %cn %s' $rev | head -c 50`; echo \"$wc words: $msg\"; done | sort -rn | head -25; };f"
+
+   # https://stackoverflow.com/questions/8475448/find-merge-commit-which-include-a-specific-commit
+   find-merge = "!sh -c 'commit=$0 && branch=${1:-HEAD} && (git rev-list $commit..$branch --ancestry-path | cat -n; git rev-list $commit..$branch --first-parent | cat -n) | sort -k2 -s | uniq -f1 -d | sort -n | tail -1 | cut -f2'"
+   show-merge = "!sh -c 'merge=$(git find-merge $0 $1) && [ -n \"$merge\" ] && git show $merge'"

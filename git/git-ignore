@@ -1,0 +1,32 @@
+#!/bin/bash
+
+# Find the correct .gitignore file and append the argument to it
+#
+
+# find .gitignore
+path=$(pwd);
+while [[ -n "$path" ]]; do
+    ignore="$path/.gitignore"
+    if [ -a $ignore ]; then
+	break
+    fi
+    path=${path%/*}
+done
+
+echo
+if [[ ! -a "$ignore" ]]; then
+    echo "could not find .gitignore"
+    exit
+else
+   echo "$ignore:"
+fi
+
+# act on .gitignore add to it or cat the file
+if [[ -n "$@" ]]; then
+    echo "$@"
+    echo
+    echo $@ >> "$ignore"
+    echo "done."
+else
+    cat "$ignore"
+fi

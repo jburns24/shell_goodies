@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+
+# Mirror a local git repo to a remote
+#
+
+
+function usage {
+  echo "usage: git mirror [-fh] remote"
+  echo
+  echo " optional flags"
+  echo "  -f "
+  echo "     force"
+  echo "  -h "
+  echo "     help"
+  echo
+  echo "  remote"
+  echo "     the remote to push all references to"
+  echo
+
+  [ -n "$*" ] && {
+    echo -e "error: $*\n" >&2
+    exit 1
+  }
+  exit
+}
+
+while getopts ":fh" o; do
+  case "${o}" in
+    f) force=true ;;
+    h) usage ;;
+    *) usage "invalid argument" ;;
+  esac
+done
+shift $((OPTIND-1))
+
+# validate
+[ -n "$*" ] && remote="$*"
+[ ! -n "$remote" ] && remote=$(git remote get-url mirror 2>/dev/null)
+[ ! -n "$remote" ] && usage "Remote not given"
+
+# echo -e "\nChecking $remote\n"
+# rbranches=$(git ls-remote $remote 2>&1)
+# [[ $? != 0 ]] && usage "$rbranches"
+
+git push --prune $remote +refs/remotes/origin/*:refs/heads/* +refs/tags/*:refs/tags/*
