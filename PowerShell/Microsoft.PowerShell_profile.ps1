@@ -1,6 +1,26 @@
-﻿$host.ui.RawUI.WindowTitle = ""
+# Set key handler so that ctrl + backspace deletes an entire word
+# Set-PSReadLineKeyHandler -Key Ctrl+h -Function BackwardKillWord
+
+# Import-Module ZLocation
 
 Import-Module posh-git
+
+Import-Module "Oh-My-Posh" -DisableNameChecking -NoClobber
+
+# this is like some strage bug but I like the outcome, I want the colors from
+# robbyrussell but on the sorin layout
+Set-PoshPrompt robbyrussell
+Set-PoshPrompt Lambda
+
+$runningScriptPath = $MyInvocation.MyCommand.Path
+if ((Get-Item $runningScriptPath).LinkType -eq 'SymbolicLink') {
+    $runningScriptPath = (Get-Item $runningScriptPath).Target
+    $scriptRootPath = (Get-Item $runningScriptPath).Directory
+} else {
+}
+
+# This is to resolve the following issue https://stackoverflow.com/questions/35176270/python-2-7-lookuperror-unknown-encoding-cp65001
+$env:PYTHONIOENCODING = "UTF-8"
 
 $GitPromptSettings.EnableFileStatus = $false
 #$GitPromptSettings.EnableFileStatus = $true
@@ -41,23 +61,23 @@ $GitPromptSettings.AfterForegroundColor                        = [ConsoleColor]:
 $GitPromptSettings.BranchForegroundColor                       = [ConsoleColor]::Red
 # $GitPromptSettings.BranchBackgroundColor                       = $null
 
-# $GitPromptSettings.BranchGoneStatusSymbol                      = [char]0x00D7 # × Multiplication sign
+# $GitPromptSettings.BranchGoneStatusSymbol                      = [char]0x00D7 # ?? Multiplication sign
 # $GitPromptSettings.BranchGoneStatusForegroundColor             = [ConsoleColor]::DarkCyan
 # $GitPromptSettings.BranchGoneStatusBackgroundColor             = $null
 
-# $GitPromptSettings.BranchIdenticalStatusToSymbol               = [char]0x2261 # ≡ Three horizontal lines
+# $GitPromptSettings.BranchIdenticalStatusToSymbol               = [char]0x2261 # ??? Three horizontal lines
 # $GitPromptSettings.BranchIdenticalStatusToForegroundColor      = [ConsoleColor]::Cyan
 # $GitPromptSettings.BranchIdenticalStatusToBackgroundColor      = $null
 
-# $GitPromptSettings.BranchAheadStatusSymbol                     = [char]0x2191 # ↑ Up arrow
+# $GitPromptSettings.BranchAheadStatusSymbol                     = [char]0x2191 # ??? Up arrow
 # $GitPromptSettings.BranchAheadStatusForegroundColor            = [ConsoleColor]::Green
 # $GitPromptSettings.BranchAheadStatusBackgroundColor            = $null
 
-# $GitPromptSettings.BranchBehindStatusSymbol                    = [char]0x2193 # ↓ Down arrow
+# $GitPromptSettings.BranchBehindStatusSymbol                    = [char]0x2193 # ??? Down arrow
 # $GitPromptSettings.BranchBehindStatusForegroundColor           = [ConsoleColor]::Red
 # $GitPromptSettings.BranchBehindStatusBackgroundColor           = $null
 
-# $GitPromptSettings.BranchBehindAndAheadStatusSymbol            = [char]0x2195 # ↕ Up & Down arrow
+# $GitPromptSettings.BranchBehindAndAheadStatusSymbol            = [char]0x2195 # ??? Up & Down arrow
 # $GitPromptSettings.BranchBehindAndAheadStatusForegroundColor   = [ConsoleColor]::Yellow
 # $GitPromptSettings.BranchBehindAndAheadStatusBackgroundColor   = $null
 
@@ -115,19 +135,24 @@ $GitPromptSettings.EnableWindowTitle                           = ''
 
 
 # Set up a simple prompt, adding the git prompt parts inside git repos
-function global:prompt {
-    $realLASTEXITCODE = $LASTEXITCODE
+# function global:prompt {
+#     $realLASTEXITCODE = $LASTEXITCODE
 
-    Write-Host ($pwd.ProviderPath) -nonewline -ForegroundColor Cyan
-    Write-VcsStatus
-    #Write-Host " ✗" -nonewline -ForegroundColor Yellow
-    #Write-Host " »" -nonewline -ForegroundColor Yellow
-    #Write-Host ">" -nonewline -ForegroundColor Cyan
-    Write-Host (" " + [char]0x00D7) -nonewline -ForegroundColor Yellow
+#     Write-Host ($pwd.ProviderPath) -nonewline -ForegroundColor Cyan
+#     Write-VcsStatus
+#     #Write-Host " ???" -nonewline -ForegroundColor Yellow
+#     #Write-Host " ??" -nonewline -ForegroundColor Yellow
+#     #Write-Host ">" -nonewline -ForegroundColor Cyan
+#     # Write-Host (" " + [char]0x00D7) -nonewline -ForegroundColor Yellow
+#     # Write-Host (" " + [char]0x0283) -nonewline -ForegroundColor Yellow # derivative symbol
+#     # Write-Host (" " + [char]0x16B7) -nonewline -ForegroundColor Yellow # derivative symbol
+#     # Write-Host ([char]0x26A1) -nonewline -ForegroundColor Yellow # derivative symbol
+#     Write-Host (" " + [char]0x2794) -nonewline -ForegroundColor Yellow # derivative symbol
 
-    $global:LASTEXITCODE = $realLASTEXITCODE
-    return " "
-}
+
+#     $global:LASTEXITCODE = $realLASTEXITCODE
+#     return " "
+# }
 
 <#
 # setup the visual studio path
@@ -153,31 +178,35 @@ popd
 write-host "Visual Studio Command Prompt variables set." -ForegroundColor Yellow
 #>
 
-# Loading custom scripts
-# $scriptDir = Split-Path $script:MyInvocation.MyCommand.Path
+$scriptDir = Split-Path $script:MyInvocation.MyCommand.Path
 
-# @(
-# 	'.\Functions\*.ps1'
-# ) | % {
-# 	Get-ChildItem ($scriptDir + $_) | % { . "$_" }
+@(
+        '.\Functions\*.ps1'
+) | % {
+        Get-ChildItem ($scriptDir + $_) | % { . "$_" }
+}
+# # Load Jump-Location profile
+# Import-Module 'C:\Program Files\WindowsPowerShell\Modules\Jump.Location\0.6.0\Jump.Location.psd1'
+
+# if (!(Get-Alias z -ErrorAction SilentlyContinue)) {
+#       New-Alias z Jump-Location
 # }
-# Load Jump-Location profile
-Import-Module ZLocation
+
+# Invoke-Build alias
+if (!(Get-Alias ib -ErrorAction SilentlyContinue)) {
+        New-Alias ib Invoke-Build
+}
 
 Set-PSReadlineKeyHandler -Key Tab -Function Complete
 #Set-PSReadlineKeyHandler -Key Tab -Function MenuComplete
 Set-PSReadlineKeyHandler -Key Ctrl+Spacebar -ScriptBlock { Invoke-GuiCompletion }
-Set-PSReadlineOption -Colors @{ "Command" =  "Green" }
-Set-PSReadLineKeyHandler -Key Ctrl+h -Function BackwardKillWord
-Set-PSReadLineKeyHandler -Key Ctrl+k -Function ForwardDeleteLine
-
 
 # this causes errors in python looking up codepage 65001
 # LookupError: unknown encoding: cp65001
 # [Console]::OutputEncoding = [Text.UTF8Encoding]::UTF8
 #
 #$OutputEncoding = New-Object -typename System.Text.UTF8Encoding
-$PSDefaultParameterValues = @{ '*:Encoding' = 'utf8' }
+#$PSDefaultParameterValues = @{ '*:Encoding' = 'utf8' }
 #CHCP 65001
 
 # info on unicode in powershell
@@ -186,3 +215,35 @@ $PSDefaultParameterValues = @{ '*:Encoding' = 'utf8' }
 
 # interesting bash/windows aliases
 # https://gist.github.com/iegik/7485025
+# Chocolatey profile
+
+$ChocolateyProfile = "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1"
+if (!(Test-Path($ChocolateyProfile))) {
+  Import-Module "$ChocolateyProfile"
+}
+
+$PSModulePathModifiers = @('C:\git\release-scripts\PSModules')
+foreach ($p in $PSModulePathModifiers) {
+    if (!(Test-Path -Path $p)) { Write-Error "$p is not a valid psmodule path"; continue}
+    $env:PSModulePath = (@(Resolve-Path $p) + $env:PSModulePath -Split [System.IO.Path]::PathSeparator | Select-Object -Unique) -Join [System.IO.Path]::PathSeparator
+}
+
+$PathModifiers = @('C:\Users\jburns\.git-scripts', 'C:\Program Files\Git\usr\bin')
+$PathModifiers += @('C:\Python27', 'C:\Python27\Scripts') # This is needed because fabric makes a script in the Scripts directory for the command 'fab'
+foreach ($p in $PathModifiers) {
+    if (!(Test-Path -Path $p)) { Write-Error "$p is not a valid path"; continue}
+    $env:Path = (@(Resolve-Path $p) + $env:Path -Split [System.IO.Path]::PathSeparator | Select-Object -Unique) -Join [System.IO.Path]::PathSeparator
+}
+
+
+# Import custom scripts.
+if (Test-Path (Join-Path $scriptRootPath 'CustomModules')) {
+    # Found custom modules source them all
+    $global:customModules = (Join-Path $scriptRootPath 'CustomModules')
+    $scripts = Get-ChildItem $global:customModules
+    Write-Host -ForegroundColor Green "Sourcing all custom modules found in $($global:customModules)"
+    foreach ($script in ($scripts | ? { $_.Name -like "*.ps1" })) {
+        . $script.FullName
+    }
+}
+
