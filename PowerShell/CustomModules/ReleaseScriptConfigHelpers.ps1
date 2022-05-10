@@ -58,3 +58,11 @@ function Get-CommerceConfig {
     }
     return . "C:\git\release-scripts\Commerce\configs\production.config.ps1"
 }
+
+function Get-AuctivaComponenets {
+    param (
+        [String[]]
+        $servers
+    )
+    return $servers | % { (Get-AuctivaConfig).Servers[$_].Values.Keys } | sort | uniq
+}

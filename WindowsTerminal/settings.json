@@ -1,4 +1,5 @@
 {
+    "$help": "https://aka.ms/terminal-documentation",
     "$schema": "https://aka.ms/terminal-profiles-schema",
     "actions": 
     [
@@ -38,14 +39,15 @@
         "list": 
         [
             {
-                "acrylicOpacity": 0.5,
+                "antialiasingMode": "grayscale",
                 "backgroundImage": "C:\\git\\shell_goodies\\WindowsTerminal\\background-images\\pulppixel22.png",
                 "backgroundImageAlignment": "center",
                 "backgroundImageOpacity": 0.10000000000000001,
                 "backgroundImageStretchMode": "uniformToFill",
-                "commandline": "powershell.exe",
                 "cursorColor": "#00FF00",
+                "cursorHeight": 14,
                 "cursorShape": "vintage",
+                "experimental.retroTerminalEffect": false,
                 "font": 
                 {
                     "face": "CaskaydiaCove NF",
@@ -53,11 +55,12 @@
                 },
                 "guid": "{61c54bbd-c2c6-5271-96e7-009a87ff44bf}",
                 "hidden": false,
-                "name": "Windows PowerShell"
+                "name": "Windows PowerShell",
+                "opacity": 82,
+                "useAcrylic": true
             },
             {
                 "colorScheme": "Retro",
-                "commandline": "cmd.exe",
                 "cursorShape": "vintage",
                 "experimental.retroTerminalEffect": true,
                 "guid": "{0caa0dad-35be-5f56-a8ff-afceeeaa6101}",
@@ -80,6 +83,18 @@
                 "name": "Ubuntu-16.04",
                 "source": "Windows.Terminal.Wsl",
                 "startingDirectory": "//wsl$/Ubuntu-16.04/home/jburns/"
+            },
+            {
+                "guid": "{50eba4cb-057a-5de3-8a8b-7096d3e3be73}",
+                "hidden": false,
+                "name": "Developer Command Prompt for VS 2019",
+                "source": "Windows.Terminal.VisualStudio"
+            },
+            {
+                "guid": "{ccaf526c-61a1-59ad-972a-0830e821f964}",
+                "hidden": false,
+                "name": "Developer PowerShell for VS 2019",
+                "source": "Windows.Terminal.VisualStudio"
             }
         ]
     },
