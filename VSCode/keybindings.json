@@ -1,6 +1,5 @@
 // Place your key bindings in this file to override the defaults
-[
-    {
+[{
         "key": "ctrl+t",
         "command": "workbench.action.terminal.split",
         "when": "terminalFocus"
@@ -24,4 +23,9 @@
         "key": "ctrl+l",
         "command": "workbench.explorer.fileView.focus"
     },
+    {
+        "key": "ctrl+i",
+        "command": "workbench.action.focusActiveEditorGroup"
+    }
+
 ]
