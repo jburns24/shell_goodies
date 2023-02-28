@@ -26,7 +26,7 @@
    ru = remote update
    co = checkout
    cod = checkout develop
-   com = checkout master
+   com = checkout main
    au = add --update
    s = status
    ss = status -s
