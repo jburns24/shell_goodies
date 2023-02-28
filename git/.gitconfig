@@ -2,12 +2,12 @@
 # https://git-scm.com/docs/git-config
 [user]
     name = Joshua Burns
-    email = joshua.burns@morecommerce.com
+    email = joshua.burns@liatrio.com
 
 [core]
 	excludesFile = ~/.gitignore
     editor = code --wait
-    hooksPath = C:\\git\\auctiva\\.githooks
+    # hooksPath = C:\\git\\auctiva\\.githooks
     #i ignore case, R color, X no init, S chop no fold, F quit if one screen
     pager = less -iRXSF --tabs=4
     autocrlf = input
@@ -49,7 +49,7 @@
 
 ## Aliases
 [include]
-    path = ~/.git-scripts/.gitaliases
+    path = ~/git/shell_goodies/git/.gitaliases
 
 ## Appearance
 [log]
@@ -98,15 +98,8 @@
 [difftool "d"]
     cmd = "diff $LOCAL $REMOTE | less -R"
 
-[difftool "sourcetree"]
-    cmd = 'C:/Program Files (x86)/Beyond Compare 3/BComp.exe' \"$LOCAL\" \"$REMOTE\"
-
 [mergetool]
     prompt = false
-
-[mergetool "sourcetree"]
-	cmd = 'C:/Program Files (x86)/Beyond Compare 3/BComp.exe' \"$LOCAL\" \"$REMOTE\" \"$BASE\" \"$MERGED\"
-	trustExitCode = true
 
 [mergetool "p4"]
     cmd = /Applications/p4merge.app/Contents/MacOS/p4merge "$BASE" "$LOCAL" "$REMOTE" "$MERGED"
@@ -129,5 +122,5 @@
 # [commit]
 #     template = /Users/jburns/.stCommitMsg
 
-[hub]
-	host = git.osky.io
+# [hub]
+# 	host = git.osky.io
