@@ -44,7 +44,7 @@
 
    # flatten the command when accidentally typing: git git log
    git = "!f() { git $*; };f"
-
+   gone = "!f() { git fetch --all --prune; git branch -vv | awk '/: gone]/{print $1}' | xargs git branch -D; }; f"
    showtool = "!f() { [[ $1 == -* ]] && ref=\"HEAD\" || { ref=${1-HEAD}; shift; }; git difftool $ref~ $ref $*; };f"
    show-typestat = "!f() { git show --pretty= --name-only $* | rev | cut -d '.' -f1 | rev | sort | uniq -c; };f"
    diff-typestat = "!f() { git diff --name-only $* | rev | cut -d '.' -f1 | rev | sort | uniq -c; };f"
