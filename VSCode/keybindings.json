@@ -1,5 +1,16 @@
 // Place your key bindings in this file to override the defaults
-[{
+[
+    {
+        "key": "ctrl+a h",
+        "command": "workbench.action.terminal.focusNext",
+        "when":"terminalFocus"
+    },
+    {
+        "key": "ctrl+a l",
+        "command": "workbench.action.terminal.focusPrevious",
+        "when":"terminalFocus"
+    },
+    {
         "key": "ctrl+t",
         "command": "workbench.action.terminal.split",
         "when": "terminalFocus"

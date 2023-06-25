@@ -27,6 +27,7 @@
    co = checkout
    cod = checkout develop
    com = checkout main
+   comm = checkout master
    au = add --update
    s = status
    ss = status -s
