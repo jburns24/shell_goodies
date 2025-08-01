@@ -6,9 +6,7 @@
 
 [core]
 	excludesFile = ~/.gitignore
-    editor = code --wait
-    # hooksPath = C:\\git\\auctiva\\.githooks
-    #i ignore case, R color, X no init, S chop no fold, F quit if one screen
+	editor = code --wait
     pager = less -iRXSF --tabs=4
     autocrlf = input
 
@@ -20,14 +18,14 @@
     default = simple
 
 [diff]
-    tool = bc3
+    tool = code
 #	noprefix = true # breaks sourcetree stage hunk
     compactionHeuristic = 1
     renameLimit = 10000
 	colorMoved = default
 
 [merge]
-    tool = bc3
+    tool = code
 
 [fetch]
     prune = true
@@ -101,26 +99,10 @@
 [mergetool]
     prompt = false
 
-[mergetool "p4"]
-    cmd = /Applications/p4merge.app/Contents/MacOS/p4merge "$BASE" "$LOCAL" "$REMOTE" "$MERGED"
-    keepTemporaries = false
-    trustExitCode = false
-    keepBackup = false
-
-# https://thomaslevesque.com/2017/01/17/c-methods-in-git-diff-hunk-headers/
-# [diff "csharp"]
-#   xfuncname = ^[ \\t]*(((static|public|internal|private|protected|new|virtual|sealed|override|unsafe|async|partial)[ \\t]+)*[][<>@.~_[:alnum:]]+[ \\t]+[<>@._[:alnum:]]+[ \\t]*\\(.*\\))[ \\t]*$
-
-##
-##
 
 [filter "lfs"]
     clean = git-lfs clean %f
     smudge = git-lfs smudge %f
     required = true
-
-# [commit]
-#     template = /Users/jburns/.stCommitMsg
-
-# [hub]
-# 	host = git.osky.io
+[commit]
+	gpgsign = true
